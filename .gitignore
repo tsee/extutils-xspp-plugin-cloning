@@ -1,0 +1,11 @@
+Build
+_build
+blib
+*.swp
+*.swp
+*~
+MANIFEST
+MANIFEST.bak
+MANIFEST.old
+META.yml
+MYMETA.yml
