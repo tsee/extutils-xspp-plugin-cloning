@@ -83,14 +83,21 @@ sub _handle_prevent_cloning {
     }
   }
 
-  my $type = ExtUtils::XSpp::Node::Type->new(base => 'int');
-  my $meth = ExtUtils::XSpp::Node::Method->new(
+  my $inttype  = ExtUtils::XSpp::Node::Type->new(base => 'int');
+  my $chartype = ExtUtils::XSpp::Node::Type->new(base => 'char', pointer => '*');
+  my $arg = ExtUtils::XSpp::Node::Argument->new(
+    type => $chartype,
+    name => 'class_name',
+  );
+  my $meth = ExtUtils::XSpp::Node::Function->new(
+    class     => $class,
     cpp_name  => $cpp_name,
     perl_name => 'CLONE_SKIP',
-    arguments => [],
-    ret_type  => $type,
+    arguments => [$arg],
+    ret_type  => $inttype,
     code      => ["RETVAL = 1;\n"],
   );
+  $meth->set_static("package_static");
   $class->add_methods($meth);
 
   return;
