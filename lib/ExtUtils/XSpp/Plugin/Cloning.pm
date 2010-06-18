@@ -44,6 +44,10 @@ Specify this directive inside your class to prevent objects of the class
 from being cloned on thread spawning. They will simply be undefined in the
 new interperter/thread.
 
+This defines a new C<CLONE_SKIP> method in the given class that prevents
+the instances from being cloned. Note that due to this implementation detail,
+the effect of the C<%PreventCloning> directive is inheritable.
+
 =cut
 
 sub register_plugin {
@@ -51,17 +55,46 @@ sub register_plugin {
 
   $parser->add_class_tag_plugin(
     plugin => $class->new,
-    tag    => '%PreventCloning',
+    tag    => 'PreventCloning',
   );
 }
 
 sub handle_class_tag {
   my ($self, $class, $tag, %args) = @_;
-  warn $tag;
-  use Data::Dumper; warn Dumper \%args;
-  return 1;
+
+  if ($tag eq 'PreventCloning') {
+    $self->_handle_prevent_cloning($class);
+    return 1;
+  }
+  return();
 }
 
+sub _handle_prevent_cloning {
+  my ($self, $class) = @_;
+  my $class_name = $class->perl_name;
+
+  my $cpp_name = '__CLONE';
+  foreach my $method (@{$class->methods}) {
+    if ($method->name eq 'CLONE_SKIP') {
+      Carp::confess("Perl class '$class_name' already has a 'CLONE_SKIP' method");
+    }
+    if ($cpp_name eq $method->cpp_name) {
+      $cpp_name .= '_';
+    }
+  }
+
+  my $type = ExtUtils::XSpp::Node::Type->new(base => 'int');
+  my $meth = ExtUtils::XSpp::Node::Method->new(
+    cpp_name  => $cpp_name,
+    perl_name => 'CLONE_SKIP',
+    arguments => [],
+    ret_type  => $type,
+    code      => ["RETVAL = 1;\n"],
+  );
+  $class->add_methods($meth);
+
+  return;
+}
 
 1;
 __END__
@@ -70,7 +103,9 @@ __END__
 
 Steffen Mueller <smueller@cpan.org>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2010 by Steffen Mueller
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
