@@ -36,6 +36,9 @@ C<ExtUtils::XSpp::Plugin::Cloning> is a plugin for C<XS++> (See L<ExtUtils::XSpp
 for controlling the behavior of a class's objects when the interpreter/thread they
 live in is cloned.
 
+Since C<ExtUtils::XSpp>'s plugin interface is considered experimental, so is this
+module!
+
 =head1 DIRECTIVES
 
 =head2 C<%PreventCloning>
