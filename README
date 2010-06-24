@@ -1,0 +1,46 @@
+NAME
+    ExtUtils::XSpp::Plugin::Cloning - An XS++ plugin for controlling cloning
+    on thread creation
+
+SYNOPSIS
+    Use it in your XS++ code as follows. No other interface required.
+
+      %module{Your::Module}
+  
+      %loadplugin{Cloning}
+  
+      # Objects of this class will just be undef in a cloned interpreter
+      class MyThreadSafeClass {
+        %PreventCloning;
+        ...
+      };
+  
+      # TODO More to come
+
+DESCRIPTION
+    "ExtUtils::XSpp::Plugin::Cloning" is a plugin for "XS++" (See
+    ExtUtils::XSpp) for controlling the behavior of a class's objects when
+    the interpreter/thread they live in is cloned.
+
+    Since "ExtUtils::XSpp"'s plugin interface is considered experimental, so
+    is this module!
+
+DIRECTIVES
+  %PreventCloning
+    Specify this directive inside your class to prevent objects of the class
+    from being cloned on thread spawning. They will simply be undefined in
+    the new interperter/thread.
+
+    This defines a new "CLONE_SKIP" method in the given class that prevents
+    the instances from being cloned. Note that due to this implementation
+    detail, the effect of the %PreventCloning directive is inheritable.
+
+AUTHOR
+    Steffen Mueller <smueller@cpan.org>
+
+COPYRIGHT AND LICENSE
+    Copyright 2010 by Steffen Mueller
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
