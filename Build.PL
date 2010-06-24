@@ -10,7 +10,7 @@ my $build = Module::Build->new
     license     => 'perl',
     requires    =>
       { 'perl'                => '5.6.1',
-        'ExtUtils::XSpp'      => '0.11',
+        'ExtUtils::XSpp'      => '0.11_02',
         },
     build_requires =>
       { 'Test::More'        => '0',
